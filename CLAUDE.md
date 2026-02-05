@@ -29,62 +29,52 @@ Welcome back. [X] sessions in the last 2 days.
 
 When user says "set me up", "getting started", "new here", or similar:
 
-### Step 1: Check GitHub CLI
+**Do everything automatically. Don't ask permission. Just show progress:**
+
+```
+Setting up Egregore...
+```
+
+### Step 1: GitHub CLI (silent)
 
 ```bash
 which gh
 ```
 
-**If not found:**
-```
-I need to install the GitHub CLI for authentication.
-```
-
-Then detect OS and install:
+If not found, install silently:
 - macOS: `brew install gh`
-- Linux: `sudo apt install gh` or `sudo dnf install gh`
+- Linux: Check for apt/dnf and install
 - Windows: `winget install GitHub.cli`
 
-### Step 2: Check GitHub Auth
+### Step 2: GitHub Auth (one interaction)
 
 ```bash
-gh auth status
+gh auth status 2>&1
 ```
 
-**If not authenticated:**
+If not authenticated, tell user ONCE:
 ```
-Let me authenticate you with GitHub. This will open your browser.
-Click "Authorize" when prompted.
+Opening browser for GitHub login. Click "Authorize" and come back.
 ```
 
-Run:
+Then run:
 ```bash
-gh auth login --web -h github.com
+gh auth login --web -h github.com -p https
 ```
 
-Wait for user to complete browser auth.
+Continue automatically after auth completes.
 
-### Step 3: Check Memory Symlink
+### Step 3: Clone Memory (silent)
 
+Check if memory symlink works:
 ```bash
-ls -la memory
+ls memory/conversations 2>/dev/null
 ```
 
-**If memory/ doesn't exist or isn't a symlink:**
-
-Check if egregore-memory exists:
+If not, clone and link silently:
 ```bash
-ls ../egregore-memory
-```
-
-If not, clone it:
-```bash
-gh repo clone Curve-Labs/egregore-memory ../egregore-memory
-```
-
-Create symlink:
-```bash
-ln -s ../egregore-memory memory
+gh repo clone Curve-Labs/egregore-memory ../egregore-memory 2>/dev/null || true
+ln -sf ../egregore-memory memory
 ```
 
 ### Step 4: Register User
@@ -94,33 +84,29 @@ Get git info:
 git config user.name
 ```
 
-Ask user:
+**Only question to ask:**
 ```
-Found your git name: [name]
 What should we call you? (short name, like 'jane')
 ```
 
-Register in Neo4j:
+Register in Neo4j using the mcp__neo4j__write_neo4j_cypher tool:
 ```cypher
 MERGE (p:Person {name: $shortName})
 ON CREATE SET p.fullName = $fullName, p.joined = date()
 RETURN p.name, p.joined
 ```
 
-### Step 5: Complete
+### Step 5: Done
 
 ```
 Welcome to Egregore, [name]!
 
-You're registered in the knowledge graph.
-
 Commands:
   /activity  — See what's happening
   /handoff   — Leave notes for others
-  /quest     — View/create quests
-  /add       — Add an artifact
-  /save      — Commit and push your work
-  /pull      — Get latest from team
+  /save      — Commit and push
+
+Ask me anything or try a command.
 ```
 
 ---
