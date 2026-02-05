@@ -22,6 +22,7 @@ The setup will:
 | Command | Description |
 |---------|-------------|
 | `/activity` | See recent team activity |
+| `/ask` | Ask questions (self-reflection or async to others) |
 | `/handoff` | Leave notes for others |
 | `/quest` | View or create quests |
 | `/add` | Add an artifact |

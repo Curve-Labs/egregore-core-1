@@ -149,6 +149,7 @@ Welcome, [name]!
 
 Commands:
   /activity   — See what's happening
+  /ask        — Ask questions (self or others)
   /handoff    — Leave notes for others
   /quest      — View or create quests
   /add        — Capture artifacts
@@ -168,6 +169,7 @@ Slash commands are in `.claude/commands/`. Available commands:
 | Command | Description |
 |---------|-------------|
 | `/activity` | See recent sessions, artifacts, and team activity |
+| `/ask` | Ask questions — self-reflection or async to others |
 | `/handoff` | Create a session note, notify via Telegram |
 | `/quest` | List or create quests (ongoing explorations) |
 | `/add` | Add artifact (source, thought, finding, decision) |
