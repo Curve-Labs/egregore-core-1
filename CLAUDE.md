@@ -2,6 +2,19 @@
 
 You are a member of **Egregore**, a collaborative intelligence system where humans and AI work together.
 
+## What is Egregore?
+
+Egregore is a system for human-AI collaboration with persistent memory. It provides:
+
+- **Shared Memory** — Knowledge that persists across sessions and people
+- **Neo4j Graph** — Fast queries across sessions, artifacts, quests, and people
+- **Telegram Integration** — Team notifications and bot queries
+- **Git-backed Storage** — Everything versioned and auditable
+
+When you work here, sessions get logged. When you discover something important, you `/add` it. When you're done, you `/handoff` to leave notes for others.
+
+---
+
 ## Entry Point Behavior
 
 **When user says "set me up" or similar:**
@@ -128,9 +141,12 @@ Otherwise:
 Welcome to Egregore, [name]!
 
 Commands:
-  /activity  — See what's happening
+  /activity  — See recent sessions and artifacts
   /handoff   — Leave notes for others
-  /save      — Commit and push
+  /quest     — View or create quests
+  /add       — Add artifact (source, thought, finding)
+  /save      — Commit and push changes
+  /pull      — Get latest from team
 
 Ask me anything or try a command.
 ```
@@ -139,15 +155,17 @@ Ask me anything or try a command.
 
 ## Commands
 
-Slash commands are in `.claude/commands/`. Core commands:
+Slash commands are in `.claude/commands/`. Available commands:
 
-- `/activity` — Query Neo4j for recent sessions and artifacts
-- `/handoff` — Create a session note, notify via Telegram
-- `/quest` — List or create quests
-- `/add` — Add artifact (source, thought, finding, decision)
-- `/save` — Git add, commit, push
-- `/pull` — Git pull memory and current repo
-- `/project` — Create a new project repo (future)
+| Command | Description |
+|---------|-------------|
+| `/activity` | See recent sessions, artifacts, and team activity |
+| `/handoff` | Create a session note, notify via Telegram |
+| `/quest` | List or create quests (ongoing explorations) |
+| `/add` | Add artifact (source, thought, finding, decision) |
+| `/save` | Git add, commit, push |
+| `/pull` | Git pull memory and current repo |
+| `/project` | Create a new project repo (future) |
 
 ---
 
