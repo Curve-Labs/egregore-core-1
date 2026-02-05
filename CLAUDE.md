@@ -138,15 +138,23 @@ Then you'll have full access to Neo4j and Telegram.
 
 Otherwise:
 ```
-Welcome to Egregore, [name]!
+███████╗ ██████╗ ██████╗ ███████╗ ██████╗  ██████╗ ██████╗ ███████╗
+██╔════╝██╔════╝ ██╔══██╗██╔════╝██╔════╝ ██╔═══██╗██╔══██╗██╔════╝
+█████╗  ██║  ███╗██████╔╝█████╗  ██║  ███╗██║   ██║██████╔╝█████╗
+██╔══╝  ██║   ██║██╔══██╗██╔══╝  ██║   ██║██║   ██║██╔══██╗██╔══╝
+███████╗╚██████╔╝██║  ██║███████╗╚██████╔╝╚██████╔╝██║  ██║███████╗
+╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝
+
+Welcome, [name]!
 
 Commands:
-  /activity  — See recent sessions and artifacts
-  /handoff   — Leave notes for others
-  /quest     — View or create quests
-  /add       — Add artifact (source, thought, finding)
-  /save      — Commit and push changes
-  /pull      — Get latest from team
+  /activity   — See what's happening
+  /handoff    — Leave notes for others
+  /quest      — View or create quests
+  /add        — Capture artifacts
+  /save       — Commit and push
+  /pull       — Get latest
+  /onboarding — Learn how Egregore works
 
 Ask me anything or try a command.
 ```
@@ -165,6 +173,7 @@ Slash commands are in `.claude/commands/`. Available commands:
 | `/add` | Add artifact (source, thought, finding, decision) |
 | `/save` | Git add, commit, push |
 | `/pull` | Git pull memory and current repo |
+| `/onboarding` | Learn how Egregore works as a living organization |
 | `/project` | Create a new project repo (future) |
 
 ---
