@@ -48,25 +48,23 @@ When user says "set me up", "getting started", "new here", or similar:
 Setting up Egregore...
 ```
 
-### Step 1: Install Dependencies (silent)
+### Step 1: Check Dependencies
 
-**uv (for Neo4j MCP):**
+**Check what's installed:**
 ```bash
-which uvx 2>/dev/null
-```
-If not found, install silently:
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+which uvx gh brew 2>/dev/null
 ```
 
-**GitHub CLI:**
-```bash
-which gh
-```
-If not found, install silently:
+**If uv missing:**
+- macOS (has brew): `brew install uv`
+- macOS (no brew): Tell user to install Homebrew first, then `brew install uv`
+- Linux: `brew install uv` if brew available, else guide to install
+
+**If gh missing:**
 - macOS: `brew install gh`
-- Linux: Check for apt/dnf and install
-- Windows: `winget install GitHub.cli`
+- Linux: `brew install gh` if brew available
+
+**NEVER use `curl | sh` — it triggers scary warnings.**
 
 After installing uv, tell user ONCE:
 ```
