@@ -35,18 +35,32 @@ When user says "set me up", "getting started", "new here", or similar:
 Setting up Egregore...
 ```
 
-### Step 1: GitHub CLI (silent)
+### Step 1: Install Dependencies (silent)
 
+**uv (for Neo4j MCP):**
+```bash
+which uvx 2>/dev/null
+```
+If not found, install silently:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**GitHub CLI:**
 ```bash
 which gh
 ```
-
 If not found, install silently:
 - macOS: `brew install gh`
 - Linux: Check for apt/dnf and install
 - Windows: `winget install GitHub.cli`
 
-### Step 2: GitHub Auth (one interaction)
+After installing uv, tell user ONCE:
+```
+Installed uv for MCP servers. Please restart Claude Code after setup to activate them.
+```
+
+### Step 2: GitHub Auth (one interaction, if needed)
 
 ```bash
 gh auth status 2>&1
@@ -98,6 +112,18 @@ RETURN p.name, p.joined
 
 ### Step 5: Done
 
+If uv was just installed, tell user:
+```
+Welcome to Egregore, [name]!
+
+Setup complete. Since I installed uv, please:
+1. Type /exit to close Claude Code
+2. Run 'claude' again to activate the MCP servers
+
+Then you'll have full access to Neo4j and Telegram.
+```
+
+Otherwise:
 ```
 Welcome to Egregore, [name]!
 
