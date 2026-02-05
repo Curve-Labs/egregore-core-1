@@ -1,0 +1,11 @@
+# Memory symlink (each user creates their own)
+memory
+
+# OS files
+.DS_Store
+*.swp
+*~
+
+# Environment
+.env
+.env.local
