@@ -55,16 +55,21 @@ Setting up Egregore...
 which uvx gh brew 2>/dev/null
 ```
 
+**If brew missing (macOS):**
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+This is the official Homebrew installer - no scary warnings.
+
 **If uv missing:**
-- macOS (has brew): `brew install uv`
-- macOS (no brew): Tell user to install Homebrew first, then `brew install uv`
-- Linux: `brew install uv` if brew available, else guide to install
+```bash
+brew install uv
+```
 
 **If gh missing:**
-- macOS: `brew install gh`
-- Linux: `brew install gh` if brew available
-
-**NEVER use `curl | sh` — it triggers scary warnings.**
+```bash
+brew install gh
+```
 
 After installing uv, tell user ONCE:
 ```
