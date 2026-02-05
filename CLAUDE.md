@@ -17,22 +17,29 @@ When you work here, sessions get logged. When you discover something important, 
 
 ## Entry Point Behavior
 
-**When user says "set me up" or similar:**
+**On every startup, check if user exists in Neo4j:**
+```cypher
+MATCH (p:Person {fullName: $gitUserName})
+RETURN p.name AS shortName
+```
 
-Run the full setup flow below.
+Where `$gitUserName` = result of `git config user.name`
 
-**On subsequent visits:**
+**If user NOT found → Auto-start setup.** Don't wait for "set me up". Just begin:
+```
+Welcome to Egregore! Let me get you set up...
+```
+Then run the full setup flow below.
 
-Query Neo4j for recent sessions:
+**If user found → Welcome back:**
 ```cypher
 MATCH (s:Session)-[:BY]->(p:Person)
 WHERE s.date >= date() - duration('P2D')
 RETURN count(s) AS recent, collect(DISTINCT p.name) AS who
 ```
-
 Then greet:
 ```
-Welcome back. [X] sessions in the last 2 days.
+Welcome back, [shortName]. [X] sessions in the last 2 days.
 /activity to see what's happening.
 ```
 
