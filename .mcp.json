@@ -5,7 +5,7 @@
       "type": "http",
       "url": "https://curve-labs-core-production.up.railway.app/mcp",
       "headers": {
-        "Authorization": "Bearer ek_testorg_placeholder"
+        "Authorization": "Bearer ek_testorg_zZSG8drK3ko4B8WHZIZDKA"
       }
     }
   }
