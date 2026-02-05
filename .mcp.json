@@ -1,23 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/mcp.json",
   "mcpServers": {
-    "telegram": {
-      "command": "npx",
-      "args": ["-y", "@iqai/mcp-telegram"],
-      "env": {
-        "TELEGRAM_BOT_TOKEN": "8369604228:AAFEJLgCqzfx9hgPJR31nbiLRFYh9Z2oN_Q",
-        "SAMPLING_ENABLED": "false"
+    "egregore": {
+      "type": "http",
+      "url": "https://curve-labs-core-production.up.railway.app/mcp",
+      "headers": {
+        "Authorization": "Bearer ek_testorg_placeholder"
       }
-    },
-    "neo4j": {
-      "command": "uvx",
-      "args": [
-        "mcp-neo4j-cypher",
-        "--db-url", "neo4j+s://668bb747.databases.neo4j.io",
-        "--username", "neo4j",
-        "--password", "vGZaClcdYGeAzp0LbyVWPfuUgMW_QO-L6LGZQ45lBCY",
-        "--database", "neo4j"
-      ]
     }
   }
 }
