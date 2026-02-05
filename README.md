@@ -6,10 +6,13 @@ Collaborative intelligence system where humans and AI work together.
 
 1. Open terminal in this folder
 2. Run: `claude`
-3. Say: `set me up`
+3. When prompted:
+   - **"Trust this folder?"** → Select **Yes, proceed**
+   - **"Use this API key?"** → Select **No** (use your Claude Code subscription)
+4. Say: `set me up`
 
 The setup will:
-- Install GitHub CLI (if needed)
+- Install dependencies (uv, GitHub CLI)
 - Authenticate you with GitHub
 - Clone shared memory
 - Register you in the knowledge graph
@@ -24,6 +27,7 @@ The setup will:
 | `/add` | Add an artifact |
 | `/save` | Commit and push |
 | `/pull` | Get latest from team |
+| `/onboarding` | Learn how Egregore works |
 
 ## Architecture
 
