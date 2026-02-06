@@ -6,6 +6,9 @@ memory
 *.swp
 *~
 
-# Environment
+# Personal secrets
 .env
 .env.local
+
+# User state
+.egregore-state.json
