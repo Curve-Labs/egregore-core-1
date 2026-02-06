@@ -15,7 +15,7 @@ The AI analyzes context to dynamically generate AskUserQuestion-formatted questi
 
 1. **The topic** — What are we asking about?
 2. **The target** — Self, specific person, or broad exploration?
-3. **Available context** — Neo4j data about sessions, quests, artifacts
+3. **Available context** — Neo4j data via `bin/graph.sh` about sessions, quests, artifacts
 4. **Question scope** — Narrow (decision-focused) vs wide (exploratory)
 
 ## Step 1: Parse Arguments
@@ -41,7 +41,7 @@ Map to short name: "Oguzhan Yayla" → oz, "Cem Dagdelen" → cem, "Ali" → ali
 
 ## Step 3: Check for Pending Questions (if no args)
 
-If `/ask` called with no arguments, first check for pending questions:
+If `/ask` called with no arguments, first check for pending questions via `bash bin/graph.sh query "..."`:
 
 ```cypher
 MATCH (qs:QuestionSet {status: 'pending'})-[:ASKED_TO]->(p:Person {name: $me})
@@ -66,7 +66,7 @@ Use AskUserQuestion to let them select which set, then load and present those qu
 
 ## Step 4: Gather Context from Neo4j
 
-Run queries in parallel based on target:
+Run queries in parallel via `bash bin/graph.sh query "..."` based on target:
 
 **For self (`me`) or no target:**
 ```cypher
@@ -313,9 +313,7 @@ Where:
 Then notify via Telegram:
 
 ```bash
-curl -X POST https://curve-labs-core-production.up.railway.app/notify \
-  -H "Content-Type: application/json" \
-  --data-raw '{"recipient":"oz","message":"...","type":"question"}'
+bash bin/notify.sh send "oz" "Hey Oz, cem has questions about \"evaluation criteria\"\n\n3 questions waiting for you. Run /ask in Claude to answer."
 ```
 
 **Message format:**
@@ -369,9 +367,7 @@ RETURN qs.status
 Then notify the asker:
 
 ```bash
-curl -X POST https://curve-labs-core-production.up.railway.app/notify \
-  -H "Content-Type: application/json" \
-  --data-raw '{"recipient":"cem","message":"...","type":"answer"}'
+bash bin/notify.sh send "cem" "Hey Cem, oz answered your questions about \"evaluation criteria\"\n\nRun /activity to see their answers."
 ```
 
 **Message format:**
@@ -484,4 +480,5 @@ Analyzing organizational context...
 - **Appropriate scope** — Narrow for decisions, wide for exploration
 - **Always use AskUserQuestion** — Both for self and when surfacing pending questions
 - **Notify on async** — Telegram for person-targeted questions and answers
-- **Link to knowledge graph** — All questions/answers stored in Neo4j
+- **Link to knowledge graph** — All questions/answers stored in Neo4j via `bin/graph.sh`
+- **Never use MCP** — Always use `bash bin/graph.sh query "..."` for Neo4j

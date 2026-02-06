@@ -6,10 +6,10 @@ Topic: $ARGUMENTS
 
 ## Execution rules
 
-**Neo4j-first.** All data comes from Neo4j. No filesystem access to sibling repos.
+**Neo4j-first.** All data comes from Neo4j via `bin/graph.sh`. No MCP. No filesystem access to sibling repos.
 - Smart sync: fetch, pull only if behind (runs in parallel with queries)
 - 1 Bash call: git config user.name
-- 6 Neo4j queries (run in parallel)
+- 6 Neo4j queries via `bash bin/graph.sh query "..."` (run in parallel)
 - File-based fallback only if Neo4j unavailable
 
 ## Step 0: Smart sync (parallel with Step 2)
@@ -44,7 +44,9 @@ git config user.name
 
 Map to Person node: "Oguzhan Yayla" → oz, "Cem Dagdelen" → cem, "Ali" → ali
 
-## Step 2: Neo4j Queries (run all in parallel)
+## Step 2: Neo4j Queries (run all in parallel via bin/graph.sh)
+
+Execute each query with `bash bin/graph.sh query "..."`. Run all 6 in parallel Bash calls.
 
 ```cypher
 // Query 1: My projects
@@ -157,6 +159,7 @@ ls -t memory/artifacts/*.md 2>/dev/null | head -10 | xargs -I{} basename {}
 ## Rules
 
 - **No sibling directory access** — all data from Neo4j or memory/ symlink
+- **Use `bash bin/graph.sh query "..."` for all Neo4j queries** — never use MCP
 - Projects from Neo4j → show `cd ../[project] && claude`
 - Minimize tool calls — run Neo4j queries in parallel
-- File-based fallback only if Neo4j MCP unavailable
+- File-based fallback only if `bin/graph.sh` fails

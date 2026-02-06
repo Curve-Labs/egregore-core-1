@@ -43,17 +43,57 @@ Never dump a command menu. Teach commands in context when the user actually need
 
 Two config files, different purposes:
 
-- **`egregore.json`** — committed to git. Org config that everyone shares: `org_name`, `github_org`, `memory_repo`. Created by the founder, inherited by joiners via fork/clone.
+- **`egregore.json`** — committed to git. Ships with shared infra creds (`neo4j_*`, `telegram_*`). Founder fills in org-specific fields (`org_name`, `github_org`, `memory_repo`) during onboarding, then pushes to the fork. Joiners inherit the full config via clone.
 - **`.env`** — gitignored. Personal secrets only: `GITHUB_TOKEN`. Each user creates their own.
 
 **Reading values:**
 ```bash
 # From egregore.json (use jq)
 jq -r '.memory_repo' egregore.json
+jq -r '.neo4j_host' egregore.json
 
 # From .env (never use source — breaks on spaces)
 grep '^GITHUB_TOKEN=' .env | cut -d'=' -f2-
 ```
+
+## Knowledge Graph
+
+Neo4j is the query layer over the shared memory. `bin/graph.sh` connects to it via HTTP — no drivers, no MCP, just curl.
+
+```bash
+# Test connection
+bash bin/graph.sh test
+
+# Run a Cypher query
+bash bin/graph.sh query "MATCH (p:Person) RETURN p.name"
+
+# Run a query with parameters
+bash bin/graph.sh query "MATCH (p:Person {name: \$name}) RETURN p" '{"name":"oz"}'
+
+# Show schema (node labels + relationship types)
+bash bin/graph.sh schema
+```
+
+**Always use `bin/graph.sh`** for Neo4j queries — never construct curl calls to Neo4j directly. The script reads credentials from `egregore.json` and handles auth, errors, and response parsing.
+
+Current schema: Person, Session, Artifact, Quest, Project, Spirit. Relationships: BY, CONTRIBUTED_BY, HANDED_TO, INVOKED_BY, INVOLVES, PART_OF, RELATES_TO, STARTED_BY.
+
+## Notifications
+
+Telegram notifications via `bin/notify.sh`. Reads `telegram_bot_token` and `telegram_chat_id` from `egregore.json`.
+
+```bash
+# Send to a person (DMs if they have telegramId in Neo4j, falls back to group)
+bash bin/notify.sh send "oz" "Hey Oz, new handoff about MCP auth"
+
+# Send to the group chat
+bash bin/notify.sh group "New quest started: research-agent"
+
+# Test connection
+bash bin/notify.sh test
+```
+
+**Always use `bin/notify.sh`** for notifications — never construct Telegram API calls directly.
 
 ---
 
@@ -63,20 +103,20 @@ Run these steps in order. Write `.egregore-state.json` after each step to checkp
 
 ### Step 0: Organization Setup
 
-**Detection logic — check two files to determine the user's role:**
+**Detection logic — check two things to determine the user's role:**
 
-1. Does `egregore.json` exist?
+1. Does `egregore.json` have a non-empty `org_name`? (`jq -r '.org_name // empty' egregore.json`)
 2. Does `.env` exist with a non-empty `GITHUB_TOKEN`?
 
-| `egregore.json` | `.env` | Route |
+| `org_name` | `.env` | Route |
 |---|---|---|
-| Missing | — | **Founder path** (Path A below) |
-| Exists | Missing or empty | **Joiner path** (Path B below) |
-| Exists | Has token | Skip to Step 1 |
+| Empty or missing | — | **Founder path** (Path A below) |
+| Set | Missing or empty | **Joiner path** (Path B below) |
+| Set | Has token | Skip to Step 1 |
 
 #### Path A: Founder — creating a new organization
 
-`egregore.json` doesn't exist. This user is setting up Egregore for their team.
+`egregore.json` exists but `org_name` is empty. This user is setting up Egregore for their team.
 
 1. Authenticate with GitHub. Say: **"I'm opening your browser — authorize Egregore and I'll handle the rest."** Then run:
    ```bash
@@ -140,20 +180,40 @@ Run these steps in order. Write `.egregore-state.json` after each step to checkp
    ```
    If `../$GITHUB_ORG-memory` already exists, `cd` into it and `git pull` instead of cloning.
 
-8. Write `egregore.json` (this file is inside the project, so the Write tool is fine):
-   ```json
-   {
-     "org_name": "{display name}",
-     "github_org": "{org login or username}",
-     "memory_repo": "git@github.com:{org}/{org}-memory.git"
-   }
+8. Update `egregore.json` with org-specific fields (infra creds are already there from the zip):
+   ```bash
+   jq --arg org_name "$ORG_NAME" \
+      --arg github_org "$GITHUB_ORG" \
+      --arg memory_repo "git@github.com:$GITHUB_ORG/$GITHUB_ORG-memory.git" \
+      '.org_name = $org_name | .github_org = $github_org | .memory_repo = $memory_repo' \
+      egregore.json > tmp.$$.json && mv tmp.$$.json egregore.json
    ```
 
-9. Save `org_setup: true` to `.egregore-state.json`. Continue to Step 1.
+9. Initialize git and connect to the fork. The zip has no `.git` — we create one now:
+   ```bash
+   git init
+   git remote add origin "git@github.com:$GITHUB_ORG/egregore-core.git"
+   git fetch origin
+   git reset origin/main
+   ```
+   This points HEAD at the fork's history while keeping local files untouched. Then commit and push the new config:
+   ```bash
+   git add egregore.json
+   git commit -m "Configure egregore for $ORG_NAME"
+   git push -u origin main
+   ```
+
+10. Test the graph connection:
+    ```bash
+    bash bin/graph.sh test
+    ```
+    If it fails, check network connectivity. The Neo4j instance is shared — no setup needed.
+
+11. Save `org_setup: true` to `.egregore-state.json`. Continue to Step 1.
 
 #### Path B: Joiner — joining an existing organization
 
-`egregore.json` exists (inherited from the fork/clone) but `.env` is missing or has no token. This user is joining a team that already set up Egregore.
+`egregore.json` has `org_name` set (inherited from the fork/clone) but `.env` is missing or has no token. This user is joining a team that already set up Egregore.
 
 1. Read the org config and greet them:
    ```bash
@@ -172,7 +232,11 @@ Run these steps in order. Write `.egregore-state.json` after each step to checkp
    git ls-remote "$(jq -r '.memory_repo' egregore.json)" HEAD 2>&1
    ```
 
-4. **Works** → continue to Step 1.
+4. **Works** → test graph connection:
+   ```bash
+   bash bin/graph.sh test
+   ```
+   Then continue to Step 1.
 
 5. **Fails** → help debug. Common causes:
    - Not a collaborator on the repo → tell them to ask their team for access
