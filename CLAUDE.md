@@ -171,7 +171,7 @@ Run these steps in order. Write `.egregore-state.json` after each step to checkp
 
 7. Clone memory directly to sibling directory and initialize. Do NOT clone to `/tmp` — clone to the final location so there's one clone, one location:
    ```bash
-   git clone "git@github.com:$GITHUB_ORG/$GITHUB_ORG-memory.git" "../$GITHUB_ORG-memory"
+   git clone "https://github.com/$GITHUB_ORG/$GITHUB_ORG-memory.git" "../$GITHUB_ORG-memory"
    cd "../$GITHUB_ORG-memory"
    mkdir -p people conversations knowledge/decisions knowledge/patterns
    touch people/.gitkeep conversations/.gitkeep knowledge/decisions/.gitkeep knowledge/patterns/.gitkeep
@@ -184,7 +184,7 @@ Run these steps in order. Write `.egregore-state.json` after each step to checkp
    ```bash
    jq --arg org_name "$ORG_NAME" \
       --arg github_org "$GITHUB_ORG" \
-      --arg memory_repo "git@github.com:$GITHUB_ORG/$GITHUB_ORG-memory.git" \
+      --arg memory_repo "https://github.com/$GITHUB_ORG/$GITHUB_ORG-memory.git" \
       '.org_name = $org_name | .github_org = $github_org | .memory_repo = $memory_repo' \
       egregore.json > tmp.$$.json && mv tmp.$$.json egregore.json
    ```
@@ -192,7 +192,7 @@ Run these steps in order. Write `.egregore-state.json` after each step to checkp
 9. Initialize git and connect to the fork. The zip has no `.git` — we create one now:
    ```bash
    git init
-   git remote add origin "git@github.com:$GITHUB_ORG/egregore-core.git"
+   git remote add origin "https://github.com/$GITHUB_ORG/egregore-core.git"
    git fetch origin
    git reset origin/main
    ```
@@ -240,8 +240,8 @@ Run these steps in order. Write `.egregore-state.json` after each step to checkp
 
 5. **Fails** → help debug. Common causes:
    - Not a collaborator on the repo → tell them to ask their team for access
-   - SSH key issues → guide them through `ssh-keygen` and adding to GitHub
-   Do NOT loop more than twice. If still failing, say what's wrong and let the user fix it.
+   - Token expired → re-run `bash bin/github-auth.sh`
+   Do NOT try to create SSH keys. Do NOT loop more than twice. If still failing, say what's wrong and let the user fix it.
 
 6. Save `org_setup: true` to `.egregore-state.json`. Continue to Step 1.
 
@@ -259,7 +259,7 @@ git ls-remote "$(jq -r '.memory_repo' egregore.json)" HEAD 2>&1
 ```
 
 - **Works** → skip to Step 3
-- **Fails** → re-run auth: say **"Let me re-authorize — I'm opening your browser."** and run `bash bin/github-auth.sh`. If it still fails after auth, help debug (SSH keys, repo access). Do not loop more than twice.
+- **Fails** → re-run auth: say **"Let me re-authorize — I'm opening your browser."** and run `bash bin/github-auth.sh`. If it still fails after auth, help debug (repo access, token scopes). Do NOT try to create SSH keys. Do not loop more than twice.
 
 Save `github_configured: true` to state.
 
@@ -271,7 +271,7 @@ If `memory/` symlink doesn't exist:
 Setting up your workspace...
 ```
 
-Derive the clone directory name from `memory_repo` — strip the trailing `.git` and take the last path segment. For example, `git@github.com:Curve-Labs/curve-labs-memory.git` becomes `curve-labs-memory`:
+Derive the clone directory name from `memory_repo` — strip the trailing `.git` and take the last path segment. For example, `https://github.com/Curve-Labs/curve-labs-memory.git` becomes `curve-labs-memory`:
 ```bash
 MEMORY_REPO="$(jq -r '.memory_repo' egregore.json)"
 MEMORY_DIR="$(basename "$MEMORY_REPO" .git)"
@@ -335,8 +335,7 @@ Only say this once per session. Never repeat it.
 - `knowledge/decisions/` — decisions that affect the org
 - `knowledge/patterns/` — emergent patterns worth naming
 
-Org config lives in `egregore.json` (committed). Personal tokens live in `.env` (gitignored). Always use SSH, never HTTPS.
-Never HTTP-fetch private GitHub URLs — they'll 404.
+Org config lives in `egregore.json` (committed). Personal tokens live in `.env` (gitignored). Always use HTTPS for git operations — `github-auth.sh` sets up credential storage automatically.
 
 ## Working Conventions
 
