@@ -23,7 +23,12 @@ AUTH=$(printf '%s:%s' "$NEO4J_USER" "$NEO4J_PASSWORD" | base64)
 
 run_query() {
   local cypher="$1"
-  local params="${2:-{}}"
+  local params
+  if [ -n "${2:-}" ]; then
+    params="$2"
+  else
+    params="{}"
+  fi
 
   local body
   body=$(jq -n --arg stmt "$cypher" --argjson params "$params" \
