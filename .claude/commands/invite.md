@@ -62,7 +62,10 @@ zip -r "$ZIPFILE" . \
 ```bash
 INVITER=$(git config user.name || echo "Someone")
 ORG_NAME=$(jq -r '.org_name' egregore.json)
-bash bin/notify.sh file "$ZIPFILE" "Hey @$GITHUB_USER — $INVITER invited you to *${ORG_NAME}* on Egregore. Unzip this, double-click start.command, and you're in."
+bash bin/notify.sh file "$ZIPFILE" "Hey @$GITHUB_USER — $INVITER invited you to *${ORG_NAME}* on Egregore.
+
+Unzip, open Terminal, and paste:
+\`cd ~/Downloads/egregore-core && bash start.sh\`"
 ```
 
 Clean up:
