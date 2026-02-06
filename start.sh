@@ -1,6 +1,9 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
+# Clear macOS quarantine so double-click works next time
+xattr -cr . 2>/dev/null
+
 missing=()
 command -v git    >/dev/null || missing+=("git — https://git-scm.com")
 command -v claude >/dev/null || missing+=("claude — npm install -g @anthropic-ai/claude-code")
